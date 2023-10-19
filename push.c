@@ -7,31 +7,39 @@
  */
 void push(stack_t **stack, unsigned int line_number)
 {
-	stack_t *new;
-	char *arg = strtok(NULL, " \t\n");
-	int value;
+	int value, j = 0, flag = 0;
 
-	if (arg == NULL || !isdigit(*arg))
+	if (bus.arg)
 	{
-		fprintf(stderr, "L%d: usage: push integer\n", line_number);
+		if (bus.arg[0] == '-')
+			j++;
+		for (; bus.arg[j] != '\0'; j++)
+		{
+			if (bus.arg[j] > '9' || bus.arg[j] < '0')
+				flag = 1;
+		}
+		if (flag == 1)
+		{
+			fprintf(stderr, "L%d: usage: push integer\n", counter);
+			fclose(bus.file);
+			free(bus.content);
+			free_stack(*head);
+			exit(EXIT_FAILURE);
+		}
+	}
+	else
+	{
+		fprintf(stderr, "L%d: usage: push integer\n", counter);
+		fclose(bus.file);
+		free(bus.content);
+		free_stack(*head);
 		exit(EXIT_FAILURE);
 	}
 
-	value = atoi(arg);
+	value = atoi(bus.arg);
 
-	new = malloc(sizeof(stack_t));
-	if (new == NULL)
-	{
-		fprintf(stderr, "Error: malloc failed\n");
-		exit(EXIT_FAILURE);
-	}
-
-	new->n = value;
-	new->prev = NULL;
-	new->next = *stack;
-
-	if (*stack != NULL)
-		(*stack)->prev = new;
-
-	*stack = new;
+	if (bus.lifi == 0)
+		addnode(head, value);
+	else
+		addqueue(head, value);
 }
