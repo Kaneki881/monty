@@ -2,37 +2,36 @@
 
 /**
  * push - Pushes an element to the stack.
- * @stack: Double pointer to the stack (doubly linked list).
- * @line_number: Line number where the push opcode is encountered.
+ * @stack: Double pointer to the stack.
+ * @line_number: Line number in the file.
  */
 void push(stack_t **stack, unsigned int line_number)
 {
+	stack_t *new;
 	char *arg = strtok(NULL, " \t\n");
-	int num = atoi(arg);
-	stack_t *new_node = malloc(sizeof(stack_t));
+	int value;
 
-	if (arg == NULL || !arg[0])
+	if (arg == NULL || !isdigit(*arg))
 	{
-		fprintf(stderr, "L%u: usage: push integer\n", line_number);
+		fprintf(stderr, "L%d: usage: push integer\n", line_number);
 		exit(EXIT_FAILURE);
 	}
-	if (num == 0 && arg[0] != '0')
-	{
-		fprintf(stderr, "L%u: usage: push integer\n", line_number);
-		exit(EXIT_FAILURE);
-	}
-	if (new_node == NULL)
+
+	value = atoi(arg);
+
+	new = malloc(sizeof(stack_t));
+	if (new == NULL)
 	{
 		fprintf(stderr, "Error: malloc failed\n");
 		exit(EXIT_FAILURE);
 	}
 
-	new_node->n = num;
-	new_node->prev = NULL;
-	new_node->next = *stack;
+	new->n = value;
+	new->prev = NULL;
+	new->next = *stack;
 
 	if (*stack != NULL)
-		(*stack)->prev = new_node;
+		(*stack)->prev = new;
 
-	*stack = new_node;
+	*stack = new;
 }
